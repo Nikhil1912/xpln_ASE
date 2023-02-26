@@ -1,4 +1,4 @@
-from Utils import csv, kap
+from Utils import csv, kap, value
 from Utils import cosine, many, any
 from Utils import mp as mp
 from Row import Row
@@ -149,3 +149,53 @@ class Data:
             node['right'] = self.tree(right, min, cols, node['B'])
 
         return node
+
+    def prune(rule,max_size):
+        n=0
+        for txt,r in rule.items():
+            n=n+1
+            if len(r) == max_size[txt]:
+                n=n+1
+                rule[txt] = None
+        if n>0:
+            return rule
+
+    def RULE(ranges,max_size):
+        t={}
+        for r in ranges:
+            if r.txt not in t:
+                t[r.txt] = []
+            t[r.txt].append({'lo'=r.lo,'hi'=r.hi,'at'=r.at})
+        return self.prune(t,max_size)
+
+    def xpln(self,best,rest):
+        tmp = []
+        max_size={}
+        def v(has):
+            return value(has,len(best.rows),len(rest.rows),"best")
+        def score(ranges):
+            rule = self.rule(ranges,max_size)
+            if rule:
+                print(show_rule(rule))
+                bestr = selects(rule,best.rows)
+                restr = selects(rule,rest.rows)
+                if len(bestr) +len(restr) > 0:
+                    return v({'best':len(bestr),'rest':len(restr)}),rule
+
+        for ranges in bins(self.cols.x,{'best'=best.rows, 'rest'=rest.rows,self.the}):
+            maxSizes[ranges[1].txt] = len(ranges)
+            print()
+            for r in ranges:
+                print(r.txt, r.lo, r.hi)
+                val = v(r.y.has)
+                tmp.append({'range'=r, 'max'=len(r),'val'=val})
+        rule,most=firstN(sorted(tmp,key=lamda x:x['val']),score)
+        return rule,most
+
+
+
+
+
+
+
+

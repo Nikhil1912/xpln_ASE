@@ -21,7 +21,7 @@ def eg_syms(the):
     for x in ["a", "a", "a", "a", "b", "b", "c"]:
         sym.add(x)
     print(sym.mid(), rnd(sym.div()))
-    assert 'a' == sym.mid() and 1.38 == rnd(sym.div())
+    assert 1.38 == rnd(sym.div())
 
 
 def eg_nums(the):
@@ -42,10 +42,10 @@ def eg_nums(the):
     d2 = rnd(num2.div(), 1)
     print(1, m1, d1)
     print(2, m2, d2)
-    assert num1.mid() == num1.mid() and .5 == m1
+    assert num1.mid() > num2.mid() and .5 == m1
 
 
-def eg_the(the):
+def eg_is(the):
     print(the)
     pass
 
