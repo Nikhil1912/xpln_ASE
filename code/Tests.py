@@ -171,5 +171,21 @@ def eg_bins(the):
             b4=rng.txt
             print(rng.txt, rng.lo, rng.hi, rnd(value(rng.y.has, len(best.rows), len(rest.rows), "best")), dict(rng.y.has))
 
+def eg_xpln(the):
+    data = Data(the['file'], the)
+    best, rest, evals = data.sway()
+    rule,most= data.xpln(best,rest)
+    print("\n-----------\nexplain=", showRule(rule))
+    data1= data.clone(selects(rule,data.rows))
+    print("all               ",data.stats(2, best.cols.y),data.stats(2, best.cols.y,'div'))
+    print("sway with ",evals,"evals",best.stats(2, best.cols.y),best.stats(2, best.cols.y,"div"))
+    print("xpln with ",evals,"evals",data1.stats(2, data1.cols.y),data1.stats(2, data1.cols.y,"div"))
+    top,_ = data.betters(len(best.rows))
+    top = data.clone(top)
+    print("sort with ",len(data.rows),"evals",top.stats(2, top.cols.y),top.stats(2, top.cols.y,"div"))
+
+
+
+
 
 

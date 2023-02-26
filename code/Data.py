@@ -105,7 +105,11 @@ class Data:
                 mid = tmp["row"]
             else:
                 right.append(tmp["row"])
-        return left, right, A, B, mid, c
+        if self.the['Reuse'] and above:
+            evals=1
+        else:
+            evals=2
+        return left, right, A, B, mid, c, evals
 
     def sway(self, cols=None):
         # if not rows:
@@ -121,18 +125,18 @@ class Data:
         #         left, right, node["A"], node["B"] = right, left, node["B"], node["A"]
         #     node["left"] = self.sway(left, min, cols, node["A"])
         # return node
-        def worker(rows, worse, above=None):
+        def worker(rows, worse, evals0, above=None):
             if len(rows) <= len(self.rows) ** self.the["min"]:
-                return rows, many(worse, self.the['rest'] * len(rows))
-            l, r, A, B, m, c = self.half(rows, cols, above)
+                return rows, many(worse, self.the['rest'] * len(rows)), evals0
+            l, r, A, B, m, c, evals = self.half(rows, cols, above)
             if self.better(B, A):
                 l, r, A, B = r, l, B, A
             for x in r:
                 worse.append(x)
-            return worker(l, worse, A)
+            return worker(l, worse, evals+evals0,A)
 
-        best, rest = worker(self.rows, [])
-        return self.clone(best), self.clone(rest)
+        best, rest, evals = worker(self.rows, [], 0)
+        return self.clone(best), self.clone(rest),evals
 
     def tree(self, rows=None, min=None, cols=None, above=None):
         if not rows:
