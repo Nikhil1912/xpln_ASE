@@ -152,4 +152,22 @@ def showRule(rule, merge=None, merges=None, pretty=None):
     def merges(attr,ranges):
         return map(merge(sorted(ranges,key=lambda x:x.lo)),pretty),attr
     return kap(rule,merges)
-    
+
+def firstN(sortedRanges, scoreFun):
+    def print_range(r):
+        print(r.txt, r.lo, r.hi, r.y.has)   # rnd(r.val) missing, Range has no val, maybe requires some change
+
+    mp(sortedRanges, print_range)
+    first = sortedRanges[0]
+    def useful(rng):
+        if rng.val > 0.05 and rng.val > first/10:       # Won't work, not sure about the val attribute of Range
+            return rng
+
+    sortedRanges = map(useful, sortedRanges)
+    most = out = -1
+    for n in range(len(sortedRanges)):
+        tmp, rule = sortedRanges[:n]
+        if tmp and tmp > most:
+            out, most = rule, tmp
+    return out, most
+
