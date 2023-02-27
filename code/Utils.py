@@ -132,42 +132,69 @@ def value(has, nB=1, nR=1, sGoal=True):
     b, r = b / (nB + 1 / math.inf), r / (nR + 1 / math.inf)
     return b ** 2 / (b + r)
 
+
 def showRule(rule, merge=None, merges=None, pretty=None):
     def pretty(rangeR):
-        return rangeR['lo']==rangeR['hi'] and rangeR['lo'] or [rangeR['lo'], rangeR['hi']]
+        return rangeR['lo'] == rangeR['hi'] and rangeR['lo'] or [rangeR['lo'], rangeR['hi']]
+
     def merge(t0):
-        right={}
-        left={}
-        j=0
-        t=[]
-        while (j<len(t0)-1):
-            left=t0[j]
-            right=t0[j+1]
-            if right and left['hi'] == right['lo'] :
+        right = {}
+        left = {}
+        j = 0
+        t = []
+        while (j < len(t0) - 1):
+            left = t0[j]
+            right = t0[j + 1]
+            if right and left['hi'] == right['lo']:
                 left['hi'] = right['hi']
-                j=j+1
-            t.append({'lo':left['lo'], 'hi':left['hi']})
-            j=j+1
-        return len(t0)==len(t) and t or merge(t)
-    def merges(attr,ranges):
-        return map(merge(sorted(ranges,key=lambda x:x.lo)),pretty),attr
-    return kap(rule,merges)
+                j = j + 1
+            t.append({'lo': left['lo'], 'hi': left['hi']})
+            j = j + 1
+        return len(t0) == len(t) and t or merge(t)
+
+    def merges(attr, ranges):
+        return map(merge(sorted(ranges, key=lambda x: x.lo)), pretty), attr
+
+    return kap(rule, merges)
+
 
 def firstN(sortedRanges, scoreFun):
     def print_range(r):
-        print(r.txt, r.lo, r.hi, r.y.has)   # rnd(r.val) missing, Range has no val, maybe requires some change
+        print(r.txt, r.lo, r.hi, r.y.has)  # rnd(r.val) missing, Range has no val, maybe requires some change
 
     mp(sortedRanges, print_range)
     first = sortedRanges[0]
+
     def useful(rng):
-        if rng.val > 0.05 and rng.val > first/10:       # Won't work, not sure about the val attribute of Range
+        if rng.val > 0.05 and rng.val > first / 10:  # Won't work, not sure about the val attribute of Range
             return rng
 
     sortedRanges = map(useful, sortedRanges)
     most = out = -1
     for n in range(len(sortedRanges)):
-        tmp, rule = sortedRanges[:n]
+        tmp, rule = scoreFun(sortedRanges[:n])
         if tmp and tmp > most:
             out, most = rule, tmp
     return out, most
 
+
+def selects(rule, rows):
+    def disjunction(ranges, row):
+        for rng in ranges:
+            lo, hi, at = rng.lo, rng.hi, rng.at
+            x = row[at]  # Might need a change to row.cells[at]
+            if x == '?' or (lo == hi and lo == x) or lo <= x < hi:
+                return True
+        return False
+
+    def conjunction(row):
+        for ranges in rule:
+            if not disjunction(ranges, row):
+                return False
+        return True
+
+    def get_row(r):
+        if conjunction(r):
+            return r
+
+    return map(get_row, rows)
