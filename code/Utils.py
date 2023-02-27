@@ -131,3 +131,25 @@ def value(has, nB=1, nR=1, sGoal=True):
             r += n
     b, r = b / (nB + 1 / math.inf), r / (nR + 1 / math.inf)
     return b ** 2 / (b + r)
+
+def showRule(rule, merge=None, merges=None, pretty=None):
+    def pretty(rangeR):
+        return rangeR['lo']==rangeR['hi'] and rangeR['lo'] or [rangeR['lo'], rangeR['hi']]
+    def merge(t0):
+        right={}
+        left={}
+        j=0
+        t=[]
+        while (j<len(t0)-1):
+            left=t0[j]
+            right=t0[j+1]
+            if right and left['hi'] == right['lo'] :
+                left['hi'] = right['hi']
+                j=j+1
+            t.append({'lo':left['lo'], 'hi':left['hi']})
+            j=j+1
+        return len(t0)==len(t) and t or merge(t)
+    def merges(attr,ranges):
+        return map(merge(sorted(ranges,key=lambda x:x.lo)),pretty),attr
+    return kap(rule,merges)
+    
