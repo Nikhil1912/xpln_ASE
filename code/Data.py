@@ -1,9 +1,11 @@
-from Utils import csv, kap, value
+from Utils import csv, kap, value, selects, firstN, showRule
 from Utils import cosine, many, any
 from Utils import mp as mp
 from Row import Row
 from Cols import Cols
+from Discretization import bins
 import math
+import functools
 
 
 class Data:
@@ -148,13 +150,13 @@ class Data:
 
         node = {"data": self.clone(rows)}
         if len(rows) > 2 * min:
-            left, right, node["A"], node["B"], node["mid"], _ = self.half(rows, cols, above)
+            left, right, node["A"], node["B"], node["mid"], _, _ = self.half(rows, cols, above)
             node['left'] = self.tree(left, min, cols, node['A'])
             node['right'] = self.tree(right, min, cols, node['B'])
 
         return node
 
-    def prune(rule,max_size):
+    def prune(self,rule,max_size):
         n=0
         for txt,r in rule.items():
             n=n+1
@@ -164,12 +166,12 @@ class Data:
         if n>0:
             return rule
 
-    def RULE(ranges,max_size):
+    def RULE(self,ranges,max_size):
         t={}
         for r in ranges:
             if r.txt not in t:
                 t[r.txt] = []
-            t[r.txt].append({'lo'=r.lo,'hi'=r.hi,'at'=r.at})
+            t[r.txt].append({'lo':r.lo,'hi':r.hi,'at':r.at})
         return self.prune(t,max_size)
 
     def xpln(self,best,rest):
@@ -178,23 +180,28 @@ class Data:
         def v(has):
             return value(has,len(best.rows),len(rest.rows),"best")
         def score(ranges):
-            rule = self.rule(ranges,max_size)
+            rule = self.RULE(ranges,max_size)
             if rule:
-                print(show_rule(rule))
+                print(showRule(rule))
                 bestr = selects(rule,best.rows)
                 restr = selects(rule,rest.rows)
                 if len(bestr) +len(restr) > 0:
                     return v({'best':len(bestr),'rest':len(restr)}),rule
 
-        for ranges in bins(self.cols.x,{'best'=best.rows, 'rest'=rest.rows,self.the}):
-            maxSizes[ranges[1].txt] = len(ranges)
+        for ranges in bins(self.cols.x,{'best':best.rows, 'rest':rest.rows},self.the):
+            max_size[ranges[1].txt] = len(ranges)
             print()
             for r in ranges:
                 print(r.txt, r.lo, r.hi)
                 val = v(r.y.has)
-                tmp.append({'range'=r, 'max'=len(r),'val'=val})
-        rule,most=firstN(sorted(tmp,key=lamda x:x['val']),score)
+                tmp.append({'range':r, 'max':len(ranges),'val':val})
+        rule,most=firstN(sorted(tmp,key=lambda x:x['val'],reverse=True),score)
         return rule,most
+
+    def betters(self,n):
+        sorted_rows = list(sorted(self.rows, key=functools.cmp_to_key(self.better)))
+        return n and sorted_rows[:n], sorted_rows[n+1:] or sorted_rows
+
 
 
 

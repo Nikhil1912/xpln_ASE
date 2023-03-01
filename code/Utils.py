@@ -50,6 +50,15 @@ def kap(t, fun, u={}):
             u[k] = v
     return u
 
+def kap1(t, fun, u={}):
+    u = {}
+    for k, v in t.items():
+        v, k = fun(k, v)
+        if not k:
+            u[len(u)] = v
+        else:
+            u[k] = v
+    return u
 
 def cosine(a, b, c):
     if c == 0:
@@ -135,44 +144,48 @@ def value(has, nB=1, nR=1, sGoal=True):
 
 def showRule(rule, merge=None, merges=None, pretty=None):
     def pretty(rangeR):
-        return rangeR['lo'] == rangeR['hi'] and rangeR['lo'] or [rangeR['lo'], rangeR['hi']]
+        return rangeR['lo'] if rangeR['lo'] == rangeR['hi'] else [rangeR['lo'], rangeR['hi']]
 
     def merge(t0):
         right = {}
         left = {}
-        j = 0
+        j = 1
         t = []
-        while (j < len(t0) - 1):
-            left = t0[j]
-            right = t0[j + 1]
+        while j <= len(t0):
+            left = t0[j-1]
+            right = None if j == len(t0) else t0[j]
             if right and left['hi'] == right['lo']:
                 left['hi'] = right['hi']
                 j = j + 1
             t.append({'lo': left['lo'], 'hi': left['hi']})
             j = j + 1
-        return len(t0) == len(t) and t or merge(t)
+        return t if len(t0) == len(t) else merge(t)
 
     def merges(attr, ranges):
-        return map(merge(sorted(ranges, key=lambda x: x.lo)), pretty), attr
+        temp = merge(sorted(ranges, key=lambda x: x['lo']))
+        #print(temp)
+        return list(map(pretty,temp)), attr
 
-    return kap(rule, merges)
+    return kap1(rule, merges)
 
 
 def firstN(sortedRanges, scoreFun):
     def print_range(r):
-        print(r.txt, r.lo, r.hi, r.y.has)  # rnd(r.val) missing, Range has no val, maybe requires some change
-
+        print(r['range'].txt, r['range'].lo, r['range'].hi, rnd(r['val']), dict(r['range'].y.has))  # rnd(r.val) missing, Range has no val, maybe requires some change
+    print()
     mp(sortedRanges, print_range)
-    first = sortedRanges[0]
+    first = sortedRanges[0]['val']
+    print()
 
     def useful(rng):
-        if rng.val > 0.05 and rng.val > first / 10:  # Won't work, not sure about the val attribute of Range
+        if rng['val'] > 0.05 and rng['val'] > first / 10:  # Won't work, not sure about the val attribute of Range
             return rng
 
-    sortedRanges = map(useful, sortedRanges)
-    most = out = -1
-    for n in range(len(sortedRanges)):
-        tmp, rule = scoreFun(sortedRanges[:n])
+    sortedRanges = list(map(useful, sortedRanges))
+    most, out = -1,-1
+    sortedRanges = [i for i in sortedRanges if i!=None]
+    for n in range(1,len(sortedRanges)+1):
+        tmp, rule = scoreFun([i['range'] for i in sortedRanges[:n]])
         if tmp and tmp > most:
             out, most = rule, tmp
     return out, most
@@ -181,14 +194,14 @@ def firstN(sortedRanges, scoreFun):
 def selects(rule, rows):
     def disjunction(ranges, row):
         for rng in ranges:
-            lo, hi, at = rng.lo, rng.hi, rng.at
-            x = row[at]  # Might need a change to row.cells[at]
-            if x == '?' or (lo == hi and lo == x) or lo <= x < hi:
+            lo, hi, at = rng['lo'], rng['hi'], rng['at']
+            x = row.cells[at]  # Might need a change to row.cells[at]
+            if x == '?' or (lo == hi and lo == x) or (lo <= x and x< hi):
                 return True
         return False
 
     def conjunction(row):
-        for ranges in rule:
+        for ranges in rule.values():
             if not disjunction(ranges, row):
                 return False
         return True
@@ -197,4 +210,4 @@ def selects(rule, rows):
         if conjunction(r):
             return r
 
-    return map(get_row, rows)
+    return list(map(get_row, rows))

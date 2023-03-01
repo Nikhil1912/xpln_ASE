@@ -16,7 +16,7 @@ OPTIONS:
   -M  --Max     numbers                      = 512
   -p  --p       dist coefficient             = 2
   -r  --rest    how many of rest to sample   = 4
-  -R  --Reuse   child splits reuse a parent pole =True
+  -R  --Reuse   child splits reuse a parent pole = True
   -s  --seed    random number seed           = 937162211
 ACTIONS:
 """

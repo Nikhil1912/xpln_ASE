@@ -86,7 +86,7 @@ def eg_data(the):
 
 def eg_half(the):
     data = Data(the["file"], the)
-    left, right, A, B, mid, c = data.half()
+    left, right, A, B, mid, c, _ = data.half()
     print(len(left), len(right))
     l, r = data.clone(left), data.clone(right)
     # print(A.cells, c)
@@ -103,7 +103,7 @@ def eg_tree(the):
 
 def eg_sway(the):
     data = Data(the["file"], the)
-    best, rest = data.sway()
+    best, rest, _ = data.sway()
     print("\nall ", data.stats(2, data.cols.y))
     print("    ", data.stats(2, data.cols.y, 'div'))
     print("\nbest", data.stats(2, best.cols.y))
@@ -162,7 +162,7 @@ def eg_dist(the):
 def eg_bins(the):
     b4=""
     data = Data(the['file'], the)
-    best, rest = data.sway()
+    best, rest, _ = data.sway()
     print("all\t\t\tbest:{}, rest:{}".format(len(best.rows), len(rest.rows)))
     for k, t in enumerate(bins(data.cols.x, {"best": best.rows, "rest": rest.rows}, the)):
         for rng in t:
@@ -176,7 +176,7 @@ def eg_xpln(the):
     best, rest, evals = data.sway()
     rule,most= data.xpln(best,rest)
     print("\n-----------\nexplain=", showRule(rule))
-    data1= data.clone(selects(rule,data.rows))
+    data1= data.clone([i for i in selects(rule,data.rows) if i!=None])
     print("all               ",data.stats(2, best.cols.y),data.stats(2, best.cols.y,'div'))
     print("sway with ",evals,"evals",best.stats(2, best.cols.y),best.stats(2, best.cols.y,"div"))
     print("xpln with ",evals,"evals",data1.stats(2, data1.cols.y),data1.stats(2, data1.cols.y,"div"))

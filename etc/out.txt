@@ -1,1 +1,15 @@
+✅PASS : eg_bins
+✅PASS : eg_cliffs
+✅PASS : eg_clone
+✅PASS : eg_csv
+✅PASS : eg_data
+✅PASS : eg_dist
+✅PASS : eg_half
+✅PASS : eg_is
 ✅PASS : eg_nums
+✅PASS : eg_rand
+✅PASS : eg_some
+✅PASS : eg_sway
+✅PASS : eg_syms
+✅PASS : eg_tree
+✅PASS : eg_xpln
