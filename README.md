@@ -1,4 +1,5 @@
 # xpln_ASE
+[![Unit tests](https://github.com/Pathey70/xpln_ASE/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/Pathey70/xpln_ASE/actions/workflows/unit-tests.yml)
 [![DOI](https://zenodo.org/badge/606823743.svg)](https://zenodo.org/badge/latestdoi/606823743)
 
 
