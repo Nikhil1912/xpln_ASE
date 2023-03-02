@@ -1,7 +1,3 @@
-# xpln_ASE
-
-
-
 # HW 6 XPLN
 
 
