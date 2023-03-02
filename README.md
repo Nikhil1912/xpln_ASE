@@ -1,4 +1,5 @@
 # xpln_ASE
+[![DOI](https://zenodo.org/badge/606823743.svg)](https://zenodo.org/badge/latestdoi/606823743)
 
 
 
