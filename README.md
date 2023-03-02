@@ -5,7 +5,14 @@
 # HW 6 XPLN
 
 
-### Document file for HW6 Main.py file
+### Contributors
+
+- Pathey Shah
+- Prit Modi
+- Nikhil Mehra
+
+
+## Instructions
 
 
 - To view all command line options run 
